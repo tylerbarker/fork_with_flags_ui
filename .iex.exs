@@ -1,4 +1,4 @@
-alias FunWithFlags.UI.Utils
-alias FunWithFlags.UI.Templates
+alias ForkWithFlags.UI.Utils
+alias ForkWithFlags.UI.Templates
 
-FunWithFlags.UI.run_standalone()
+ForkWithFlags.UI.run_standalone()

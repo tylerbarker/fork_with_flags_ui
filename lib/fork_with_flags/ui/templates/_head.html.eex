@@ -1,6 +1,6 @@
 <head>
   <meta charset="utf-8">
-  <title>FunWithFlags - <%= @title %></title>
+  <title>ForkWithFlags - <%= @title %></title>
 
   <link rel="stylesheet" href="<%= path(@conn, "/assets/bootstrap.min.css") %>">
   <link rel="stylesheet" href="<%= path(@conn, "/assets/style.css") %>">
