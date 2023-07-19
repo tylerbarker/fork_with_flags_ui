@@ -16,6 +16,10 @@ I in no way take credit for, or attribute myself to, this library. All that goes
 
 Thanks ✌️
 
+## Switching from fun_with_flags_ui
+
+See the [fork_with_flags README](https://github.com/tylerbarker/fork_with_flags#readme).
+
 ## How to run
 
 `ForkWithFlags.UI` is just a plug and it can be run in a number of ways.
