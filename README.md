@@ -1,17 +1,28 @@
-# FunWithFlags.UI
+# ForkWithFlags.UI
 
-[![Mix Tests](https://github.com/tompave/fun_with_flags_ui/workflows/Mix%20Tests/badge.svg)](https://github.com/tompave/fun_with_flags_ui/actions?query=branch%3Amaster)
-[![Code Quality](https://github.com/tompave/fun_with_flags_ui/actions/workflows/quality.yml/badge.svg?branch=master)](https://github.com/tompave/fun_with_flags_ui/actions/workflows/quality.yml?query=branch%3Amaster)  
-[![Hex.pm](https://img.shields.io/hexpm/v/fun_with_flags_ui.svg)](https://hex.pm/packages/fun_with_flags_ui)
+[![Mix Tests](https://github.com/tylerbarker/fork_with_flags_ui/workflows/Mix%20Tests/badge.svg)](https://github.com/tylerbarker/fork_with_flags_ui/actions?query=branch%3Amaster)
+[![Code Quality](https://github.com/tylerbarker/fork_with_flags_ui/actions/workflows/quality.yml/badge.svg?branch=master)](https://github.com/tylerbarker/fork_with_flags_ui/actions/workflows/quality.yml?query=branch%3Amaster)  
+[![Hex.pm](https://img.shields.io/hexpm/v/fork_with_flags_ui.svg)](https://hex.pm/packages/fork_with_flags_ui)
 
-A Web dashboard for the [FunWithFlags](https://github.com/tompave/fun_with_flags) Elixir package.
+A Web dashboard for the [ForkWithFlags](https://github.com/tylerbarker/fork_with_flags) Elixir package. Forked from [FunWithFlags.UI](https://github.com/tompave/fun_with_flags_ui) in order to integrate with the original package fork.
 
-![](https://raw.githubusercontent.com/tompave/fun_with_flags_ui/master/demo/demo.gif)
+![](https://raw.githubusercontent.com/tompave/fork_with_flags_ui/master/demo/demo.gif)
 
+## A note on the fork
+
+This is a temporary fork of [tompave](https://github.com/tompave)'s excellent [fun_with_flags_ui](https://github.com/tompave/fun_with_flags_ui) library.
+
+I in no way take credit for, or attribute myself to, this library. All that goes to [tompave](https://github.com/tompave), whom I'm happy to hand this work back over to if and whenever the time comes.
+
+Thanks ✌️
+
+## Switching from fun_with_flags_ui
+
+See the [fork_with_flags README](https://github.com/tylerbarker/fork_with_flags#readme).
 
 ## How to run
 
-`FunWithFlags.UI` is just a plug and it can be run in a number of ways.
+`ForkWithFlags.UI` is just a plug and it can be run in a number of ways.
 It's primarily meant to be embedded in a host Plug application, either Phoenix or another Plug app.
 
 ### Mounted in Phoenix
@@ -29,7 +40,7 @@ defmodule MyPhoenixAppWeb.Router do
 
   scope path: "/feature-flags" do
     pipe_through :mounted_apps
-    forward "/", FunWithFlags.UI.Router, namespace: "feature-flags"
+    forward "/", ForkWithFlags.UI.Router, namespace: "feature-flags"
   end
 end
 ```
@@ -43,11 +54,11 @@ Since it's just a plug, it can also be mounted into any other Plug application u
 ```elixir
 defmodule Another.App do
   use Plug.Router
-  forward "/feature-flags", to: FunWithFlags.UI.Router, init_opts: [namespace: "feature-flags"]
+  forward "/feature-flags", to: ForkWithFlags.UI.Router, init_opts: [namespace: "feature-flags"]
 end
 ```
 
-Note: If your plug router uses `Plug.CSRFProtection`, `FunWithFlags.UI.Router` should be added before your CSRF protection plug because it already implements its own CSRF protection. If you declare `FunWithFlags.UI.Router` after, your CSRF plug will likely block GET requests for the JS assets of the dashboard.
+Note: If your plug router uses `Plug.CSRFProtection`, `ForkWithFlags.UI.Router` should be added before your CSRF protection plug because it already implements its own CSRF protection. If you declare `ForkWithFlags.UI.Router` after, your CSRF plug will likely block GET requests for the JS assets of the dashboard.
 
 ### Standalone
 
@@ -57,15 +68,15 @@ If you clone the repository, the library comes with two convenience functions to
 
 ```elixir
 # Simple, let Cowboy sort out the supervision tree:
-{:ok, pid} = FunWithFlags.UI.run_standalone()
+{:ok, pid} = ForkWithFlags.UI.run_standalone()
 
 # Uses some explicit supervision configuration:
-{:ok, pid} = FunWithFlags.UI.run_supervised()
+{:ok, pid} = ForkWithFlags.UI.run_supervised()
 ```
 
 These functions come in handy for local development, and are _not_ necessary when embedding the Plug into a host application.
 
-Please note that even though the `FunWithFlags.UI` module implements the `Application` behavior and comes with a proper `start/2` callback, this is not enabled by design and, in fact, the Mixfile doesn't declare an entry module.
+Please note that even though the `ForkWithFlags.UI` module implements the `Application` behavior and comes with a proper `start/2` callback, this is not enabled by design and, in fact, the Mixfile doesn't declare an entry module.
 
 If you really need to run it standalone in a reliable manner, you are encouraged to write your own supervision setup.
 
@@ -92,20 +103,20 @@ defmodule MyPhoenixAppWeb.Router do
 
   scope path: "/feature-flags" do
     pipe_through :mounted_apps
-    forward "/", FunWithFlags.UI.Router, namespace: "feature-flags"
+    forward "/", ForkWithFlags.UI.Router, namespace: "feature-flags"
   end
 end
 ```
 
 ## Caveats
 
-While the base `fun_with_flags` library is quite relaxed in terms of valid flag names, group names and actor identifers, this web dashboard extension applies some more restrictive rules.
-The reason is that all `fun_with_flags` cares about is that some flag and group names can be represented as an Elixir Atom, while actor IDs are just strings. Since you can use that API in your code, the library will only check that the parameters have the right type.
+While the base `fork_with_flags` library is quite relaxed in terms of valid flag names, group names and actor identifers, this web dashboard extension applies some more restrictive rules.
+The reason is that all `fork_with_flags` cares about is that some flag and group names can be represented as an Elixir Atom, while actor IDs are just strings. Since you can use that API in your code, the library will only check that the parameters have the right type.
 
 Things change on the web, however. Think about the binary `"Ook? Ook!"`. In code, it can be accepted as a valid flag name:
 
 ```elixir
-{:ok, true} = FunWithFlags.enable(:"Ook? Ook!", for_group: :"weird, huh?")
+{:ok, true} = ForkWithFlags.enable(:"Ook? Ook!", for_group: :"weird, huh?")
 ```
 
 On the web, however, the question mark makes working with URLs a bit tricky: in `http://localhost:8080/flags/Ook?%20Ook!`, the flag name will be `Ook` and the rest will be a query string.
@@ -115,11 +126,11 @@ For this reason this library enforces some stricter rules when creating flags an
 
 ## Installation
 
-The package can be installed by adding `fun_with_flags_ui` to your list of dependencies in `mix.exs`.  
-It requires [`fun_with_flags`](https://hex.pm/packages/fun_with_flags), see its [installation documentation](https://github.com/tompave/fun_with_flags#installation) for more details.
+The package can be installed by adding `fork_with_flags_ui` to your list of dependencies in `mix.exs`.  
+It requires [`fork_with_flags`](https://hex.pm/packages/fork_with_flags), see its [installation documentation](https://github.com/tylerbarker/fork_with_flags#installation) for more details.
 
 ```elixir
 def deps do
-  [{:fun_with_flags_ui, "~> 0.8"}]
+  [{:fork_with_flags_ui, "~> 0.8"}]
 end
 ```

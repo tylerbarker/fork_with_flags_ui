@@ -1,13 +1,13 @@
-defmodule FunWithFlags.UI.Utils do
+defmodule ForkWithFlags.UI.Utils do
   @moduledoc false
 
-  alias FunWithFlags.{Flag, Gate}
-
+  alias ForkWithFlags.{Flag, Gate}
 
   def get_flag_status(%Flag{gates: gates} = flag) do
     case boolean_gate_open?(flag) do
       {:ok, true} ->
         :fully_open
+
       _ ->
         if any_other_gate_open?(gates) do
           :half_open
@@ -21,6 +21,7 @@ defmodule FunWithFlags.UI.Utils do
     case Enum.find(gates, &Gate.boolean?/1) do
       %Gate{type: :boolean, enabled: enabled} ->
         {:ok, enabled}
+
       nil ->
         :missing
     end
@@ -28,10 +29,9 @@ defmodule FunWithFlags.UI.Utils do
 
   defp any_other_gate_open?(gates) do
     gates
-    |> Enum.filter(fn(gate) -> !Gate.boolean?(gate) end)
-    |> Enum.any?(fn(%Gate{enabled: enabled}) -> enabled end)
+    |> Enum.filter(fn gate -> !Gate.boolean?(gate) end)
+    |> Enum.any?(fn %Gate{enabled: enabled} -> enabled end)
   end
-
 
   def sort_flags(flags) do
     Enum.sort(flags, &sorter/2)
@@ -45,17 +45,20 @@ defmodule FunWithFlags.UI.Utils do
       a.name < b.name
     else
       case sa do
-        :fully_open -> true
+        :fully_open ->
+          true
+
         :half_open ->
           case sb do
             :fully_open -> false
             :closed -> true
           end
-        :closed -> false
+
+        :closed ->
+          false
       end
     end
   end
-
 
   # Create new flags as disabled.
   #
@@ -68,15 +71,15 @@ defmodule FunWithFlags.UI.Utils do
   def create_flag_with_name(name) do
     name
     |> String.to_atom()
-    |> FunWithFlags.disable()
+    |> ForkWithFlags.disable()
   end
-
 
   def get_flag(name) do
     if safe_flag_exists?(name) do
-      case FunWithFlags.SimpleStore.lookup(String.to_existing_atom(name)) do
+      case ForkWithFlags.SimpleStore.lookup(String.to_existing_atom(name)) do
         {:ok, _flag} = result ->
           result
+
         {:error, _reason} = error ->
           error
       end
@@ -85,15 +88,14 @@ defmodule FunWithFlags.UI.Utils do
     end
   end
 
-
   def blank?(nil), do: true
   def blank?(""), do: true
   def blank?(" "), do: true
+
   def blank?(string) when is_binary(string) do
-    length = string |> String.trim |> String.length
+    length = string |> String.trim() |> String.length()
     length == 0
   end
-
 
   def boolean_gate(%Flag{gates: gates}) do
     Enum.find(gates, &Gate.boolean?/1)
@@ -102,21 +104,20 @@ defmodule FunWithFlags.UI.Utils do
   def actor_gates(%Flag{gates: gates}) do
     gates
     |> Enum.filter(&Gate.actor?/1)
-    |> Enum.sort_by(&(&1.for))
+    |> Enum.sort_by(& &1.for)
   end
 
   def group_gates(%Flag{gates: gates}) do
     gates
     |> Enum.filter(&Gate.group?/1)
-    |> Enum.sort_by(&(&1.for))
+    |> Enum.sort_by(& &1.for)
   end
 
   def percentage_gate(%Flag{gates: gates}) do
-    Enum.find(gates, fn(g) ->
+    Enum.find(gates, fn g ->
       Gate.percentage_of_time?(g) or Gate.percentage_of_actors?(g)
     end)
   end
-
 
   def parse_bool("true"), do: true
   def parse_bool("1"), do: true
@@ -124,12 +125,13 @@ defmodule FunWithFlags.UI.Utils do
   def parse_bool(true), do: true
   def parse_bool(_), do: false
 
-
   def validate_flag_name(conn, name) do
     if Regex.match?(~r/^\w+$/, name) do
       if safe_flag_exists?(name) do
         path = Path.join(conn.assigns[:namespace], "/flags/" <> name)
-        {:fail, "A flag named '#{name}' <u><a href='#{path}' class='text-danger'>already exists</a></u>."}
+
+        {:fail,
+         "A flag named '#{name}' <u><a href='#{path}' class='text-danger'>already exists</a></u>."}
       else
         :ok
       end
@@ -137,7 +139,6 @@ defmodule FunWithFlags.UI.Utils do
       {:fail, "Invalid flag name, it must match <code>/^\w+$/</code>."}
     end
   end
-
 
   # We don't want to just convert any user provided string to an atom because
   # atoms are not garbage collected, and this could potentially leak memory
@@ -150,13 +151,12 @@ defmodule FunWithFlags.UI.Utils do
   #
   defp safe_flag_exists?(name) do
     try do
-      {:ok, all} = FunWithFlags.all_flag_names()
+      {:ok, all} = ForkWithFlags.all_flag_names()
       Enum.member?(all, String.to_existing_atom(name))
     rescue
       ArgumentError -> false
     end
   end
-
 
   def sanitize(name) do
     name
@@ -165,16 +165,18 @@ defmodule FunWithFlags.UI.Utils do
 
   def validate(name) do
     string = to_string(name)
+
     cond do
       blank?(string) ->
         {:fail, "can't be blank"}
+
       String.match?(string, ~r/\?/) ->
         {:fail, "includes invalid characters: '?'"}
+
       true ->
         :ok
     end
   end
-
 
   def parse_and_validate_float(string) do
     if blank?(string) do
@@ -183,14 +185,15 @@ defmodule FunWithFlags.UI.Utils do
       case Float.parse(string) do
         {float, _} when float > 0 and float < 1 ->
           {:ok, float}
+
         {_float, _} ->
           {:fail, "is outside the '0.0 < x < 1.0' range"}
+
         :error ->
           {:fail, "is not a valid decimal number"}
       end
     end
   end
-
 
   # If we have an unexpected value here it's because people
   # are messing around with the <input>s in the form. Just
@@ -203,7 +206,6 @@ defmodule FunWithFlags.UI.Utils do
       _ -> :time
     end
   end
-
 
   # Deal with floating point rounding errors without
   # losing precision.
@@ -229,7 +231,6 @@ defmodule FunWithFlags.UI.Utils do
       Float.round(percentage, decimal_digits - 2)
     end
   end
-
 
   defp _decimal_digits(float) do
     float

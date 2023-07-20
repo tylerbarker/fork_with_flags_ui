@@ -1,6 +1,6 @@
-defmodule FunWithFlags.UI.TestUtils do
+defmodule ForkWithFlags.UI.TestUtils do
   @test_db 5
-  @redis FunWithFlags.Store.Persistent.Redis
+  @redis ForkWithFlags.Store.Persistent.Redis
 
   # Since the flags are saved on shared storage (ETS and
   # Redis), in order to keep the tests isolated _and_ async
@@ -13,7 +13,7 @@ defmodule FunWithFlags.UI.TestUtils do
   def unique_atom do
     :crypto.strong_rand_bytes(7)
     |> Base.encode32(padding: false, case: :lower)
-    |> String.to_atom
+    |> String.to_atom()
   end
 
   def use_redis_test_db do
@@ -29,6 +29,7 @@ defmodule FunWithFlags.UI.TestUtils do
   end
 
   defp delete_keys([]), do: 0
+
   defp delete_keys(keys) do
     Redix.command!(@redis, ["DEL" | keys])
   end

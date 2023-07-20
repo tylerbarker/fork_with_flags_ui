@@ -1,8 +1,8 @@
-defmodule FunWithFlags.UI do
+defmodule ForkWithFlags.UI do
   @moduledoc """
-  FunWithFlags.UI, a web dashboard for the [FunWithFlags](https://github.com/tompave/fun_with_flags) package.
+  ForkWithFlags.UI, a web dashboard for the [ForkWithFlags](https://github.com/tylerbarker/fork_with_flags) package.
 
-  See the [Readme](/fun_with_flags_ui/readme.html#how-to-run) for more detailed instructions.
+  See the [Readme](/fork_with_flags_ui/readme.html#how-to-run) for more detailed instructions.
   """
 
   use Application
@@ -12,19 +12,18 @@ defmodule FunWithFlags.UI do
     check_cowboy()
 
     children = [
-      Plug.Adapters.Cowboy.child_spec(:http, FunWithFlags.UI.Router, [], [port: 8080])
+      Plug.Adapters.Cowboy.child_spec(:http, ForkWithFlags.UI.Router, [], port: 8080)
     ]
 
-    opts = [strategy: :one_for_one, name: FunWithFlags.UI.Supervisor]
+    opts = [strategy: :one_for_one, name: ForkWithFlags.UI.Supervisor]
     Supervisor.start_link(children, opts)
   end
-
 
   # Since :cowboy is an optional dependency, if we want to run this
   # standalone we want to return a clear error message if Cowboy is
   # missing.
   #
-  # On the other hand, if :fun_with_flags_ui is run as a Plug in a
+  # On the other hand, if :fork_with_flags_ui is run as a Plug in a
   # host application, we don't really care about this dependency
   # here, as the responsibility of managing the HTTP layer belongs
   # to the host app.
@@ -36,10 +35,9 @@ defmodule FunWithFlags.UI do
       :ok
     else
       {:error, _} ->
-        raise "You need to add :cowboy to your Mix dependencies to run FunWithFlags.UI standalone."
+        raise "You need to add :cowboy to your Mix dependencies to run ForkWithFlags.UI standalone."
     end
   end
-
 
   @doc """
   Convenience function to simply run the Plug in Cowboy.
@@ -48,9 +46,8 @@ defmodule FunWithFlags.UI do
   of :cowboy and :ranch.
   """
   def run_standalone do
-    Plug.Adapters.Cowboy.http FunWithFlags.UI.Router, [], port: 8080
+    Plug.Adapters.Cowboy.http(ForkWithFlags.UI.Router, [], port: 8080)
   end
-
 
   @doc """
   Convenience function to run the Plug in a custom supervision tree.
