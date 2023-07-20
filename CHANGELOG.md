@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.8.2
+
+* Bump `fork_with_flags` to 1.11.2 to fix Redis channel issue.
+
 ## v0.8.1
 
 * Always URI-escape flag names before rendering them in web pages. ([pull/24](https://github.com/tompave/fun_with_flags_ui/pull/24)) This fixes a XSS vulnerability on the 404 page. Thank you [voltone](https://github.com/voltone) for reporting the issue privately and for discussing possible fixes, and [mmrupp](https://github.com/mmrupp) from [Cure53](https://cure53.de/) for discovering the issue.

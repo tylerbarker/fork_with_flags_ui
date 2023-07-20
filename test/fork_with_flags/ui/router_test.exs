@@ -111,8 +111,15 @@ defmodule ForkWithFlags.UI.RouterTest do
       {:ok, true} = ForkWithFlags.enable(:frozen_yogurt)
       {:ok, true} = ForkWithFlags.enable(:frozen_yogurt, for_group: "some_group")
 
-      assert %Flag{name: :frozen_yogurt, gates: [%Gate{type: :boolean}, %Gate{type: :group}]} =
+      assert %Flag{name: :frozen_yogurt, gates: got_gates} =
                ForkWithFlags.get_flag(:frozen_yogurt)
+
+      expected_gates = [
+        %Gate{type: :boolean, for: nil, enabled: true},
+        %Gate{type: :group, for: "some_group", enabled: true}
+      ]
+
+      assert Enum.sort(expected_gates) == Enum.sort(got_gates)
 
       conn = request!(:delete, "/flags/frozen_yogurt/boolean")
       assert 302 = conn.status
@@ -159,11 +166,15 @@ defmodule ForkWithFlags.UI.RouterTest do
 
       assert %Flag{
                name: :chocolate,
-               gates: [
-                 %Gate{type: :boolean},
-                 %Gate{type: :percentage_of_time, for: 0.5}
-               ]
+               gates: got_gates
              } = ForkWithFlags.get_flag(:chocolate)
+
+      expected_gates = [
+        %Gate{type: :boolean, for: nil, enabled: false},
+        %Gate{type: :percentage_of_time, for: 0.5, enabled: true}
+      ]
+
+      assert Enum.sort(expected_gates) == Enum.sort(got_gates)
     end
 
     test "with a previous percentage gate it replaces it, then redirects to the details page" do

@@ -1,7 +1,7 @@
 defmodule ForkWithFlagsUi.Mixfile do
   use Mix.Project
 
-  @version "0.8.1"
+  @version "0.8.2"
 
   def project do
     [
@@ -42,7 +42,7 @@ defmodule ForkWithFlagsUi.Mixfile do
       {:plug, "~> 1.12"},
       {:plug_cowboy, ">= 2.0.0", optional: true},
       {:cowboy, ">= 2.0.0", optional: true},
-      {:fork_with_flags, "~> 1.11"},
+      {:fork_with_flags, "~> 1.11.2"},
       {:redix, "~> 1.0", only: [:dev, :test]},
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:credo, "~> 1.6", only: :dev, runtime: false}
